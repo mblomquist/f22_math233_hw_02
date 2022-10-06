@@ -45,3 +45,14 @@ double bilinear_interpolation(Grid2d & grid,std::vector<double> & func,double x,
 
     return phi;
 }
+
+double minmod(double x, double y){
+    if ((x*y) >= 0)
+        return 0.;
+    else {
+        if (abs(x) < abs(y))
+            return x;
+        else
+            return y;
+    }
+}
