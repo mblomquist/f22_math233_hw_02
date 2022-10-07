@@ -59,5 +59,40 @@ double minmod(double x, double y){
 
 double quadratic_interpolation(Grid2d & grid,std::vector<double> & func,double x, double y){
 
-    return 0.;
+    double phi = 0.;
+
+    // check if point is outside the domain
+    if (x < grid.get_xmin())
+        x = grid.get_xmin();
+    if (x > grid.get_xmax())
+        x = grid.get_xmax();
+    if (y < grid.get_ymin())
+        y = grid.get_ymin();
+    if (y > grid.get_ymax())
+        y = grid.get_ymax();
+
+    double dx = grid.get_dx();
+    double dy = grid.get_dy();
+
+    int i = floor( (x - grid.get_xmin()) / dx);
+    int j = floor( (y - grid.get_ymin()) / dy);
+
+    double x_i = grid.get_xmin() + i * dx;
+    double y_j = grid.get_ymin() + j * dy;
+    double x_ip1 = x_i + dx;
+    double y_jp1 = y_j + dy;
+
+    double phi_xx_l = (func[grid.n_from_ij(i-1,j)] - 2.*func[grid.n_from_ij(i,j)] + func[grid.n_from_ij(i+1,j)])/dx/dx;
+    double phi_xx_r = (func[grid.n_from_ij(i,j)] - 2.*func[grid.n_from_ij(i+1,j)] + func[grid.n_from_ij(i+2,j)])/dx/dx;
+    double phi_yy_t = (func[grid.n_from_ij(i,j-1)] - 2.*func[grid.n_from_ij(i,j)] + func[grid.n_from_ij(i,j-1)])/dy/dy;
+    double phi_yy_b = (func[grid.n_from_ij(i,j)] - 2.*func[grid.n_from_ij(i,j+1)] + func[grid.n_from_ij(i,j+2)])/dy/dy;
+
+    phi = func[grid.n_from_ij(i,j)] * (x_ip1-x)*(y_jp1-y)/dx/dy
+        + func[grid.n_from_ij(i,j+1)] * (x_ip1-x)*(y-y_j)/dx/dy
+        + func[grid.n_from_ij(i+1,j)] * (x-x_i)*(y_jp1-y)/dx/dy
+        + func[grid.n_from_ij(i+1,j+1)] * (x-x_i)*(y-y_j)/dx/dy
+        - (x-x_i)*(x_ip1-x)/2 * minmod(phi_xx_l, phi_xx_r)
+        - (y-y_j)*(y_jp1-y)/2 * minmod(phi_yy_t, phi_yy_b);
+
+    return phi;
 }
