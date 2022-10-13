@@ -24,6 +24,8 @@ public:
     double get_dx();    // return dx to user
     double get_dy();    // return dy to user
 
+    double get_M(){return M;}
+    double get_N(){return N;}
 
     double get_xmin();
     double get_ymin();

@@ -23,6 +23,7 @@ public:
     void set_grid(Grid2d & new_grid){sl_grid = new_grid;} // set grid
     std::vector<double> get_sol(){ return sol; }        // access solution
     void set_velocity(std::vector<double> & vel_u0, std::vector<double> & vel_v0);
+    void update_sol(std::vector<double> & sol, double dt);
 
 
 };

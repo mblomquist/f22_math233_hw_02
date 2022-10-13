@@ -23,16 +23,19 @@ int main() {
     double ymin = -1.0;
     double ymax = 1.0;
 
-    int N = 10;
-    int M = 10;
+    int N = 100;
+    int M = N;
 
     Grid2d newGrid(N, M, xmin, xmax, ymin, ymax);
 
-    newGrid.print_VTK_format("../results/f22_hw02_problem1.vtk");
+    double dx = newGrid.get_dx();
 
-    std::vector<double> vel_u, vel_v;
+    newGrid.print_VTK_format("../results/f22_hw02_problem1_0.vtk");
+
+    std::vector<double> vel_u, vel_v, phi;
     vel_u.resize(N*M);
     vel_v.resize(N*M);
+    phi.resize(N*M);
 
     for (int i = 0; i < N; i++){
         for (int j = 0; j < M; j++){
@@ -40,11 +43,50 @@ int main() {
                     newGrid.y_from_n(newGrid.n_from_ij(i,j)),
                     vel_u[newGrid.n_from_ij(i,j)],
                     vel_v[newGrid.n_from_ij(i,j)]);
+
+            phi[newGrid.n_from_ij(i,j)] = cf_phi(newGrid.x_from_n(newGrid.n_from_ij(i,j)),
+                                                 newGrid.y_from_n(newGrid.n_from_ij(i,j)));
         }
     }
 
-    newGrid.print_VTK_format(vel_u, "vel_u", "../results/f22_hw02_problem1.vtk");
-    newGrid.print_VTK_format(vel_v, "vel_v", "../results/f22_hw02_problem1.vtk");
+    newGrid.print_VTK_format(vel_u, "vel_u", "../results/f22_hw02_problem1_0.vtk");
+    newGrid.print_VTK_format(vel_v, "vel_v", "../results/f22_hw02_problem1_0.vtk");
+    newGrid.print_VTK_format(phi, "phi", "../results/f22_hw02_problem1_0.vtk");
+
+    double cfl = 0.5;
+    double dt = dx/cfl;
+
+    SL_method sl_solver;
+    sl_solver.set_grid(newGrid);
+    sl_solver.set_velocity(vel_u, vel_v);
+
+    int steps = 314;
+    int pr, mprint;
+
+    mprint = 10;
+    pr = 0;
+
+    for (int i = 0; i < steps; i++){
+        sl_solver.update_sol(phi, dt);
+
+        if (i % mprint == 0){
+            pr++;
+
+            std::string fileName = "../results/f22_hw02_problem1_";
+            std::string fileType = ".vtk";
+
+            fileName = fileName + std::to_string(pr);
+
+            fileName.append(fileType);
+
+            std::cout << fileName << std::endl;
+
+            newGrid.print_VTK_format(fileName);
+            newGrid.print_VTK_format(vel_u, "vel_u", fileName);
+            newGrid.print_VTK_format(vel_v, "vel_v", fileName);
+            newGrid.print_VTK_format(phi, "phi", fileName);
+        }
+    }
 
     // Problem 2 - Reinitialization Equation
 

@@ -35,3 +35,17 @@ void SL_method::set_velocity(std::vector<double> &vel_u0, std::vector<double> &v
     vel_u = vel_u0;
     vel_v = vel_v0;
 }
+
+void SL_method::update_sol(std::vector<double> & phi, double dt) {
+
+    sol.resize(phi.size());
+
+    for (int i = 0; i < sl_grid.get_N(); i++){
+        for (int j = 0; j < sl_grid.get_M(); j++) {
+            double xd, yd;
+            find_departure_2nd(sl_grid.n_from_ij(i, j), xd, yd, dt);
+            sol[sl_grid.n_from_ij(i, j)] = quadratic_interpolation(sl_grid, phi, xd, yd);
+        }
+    }
+    phi = sol;
+}
