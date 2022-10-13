@@ -4,6 +4,8 @@
 #include "tools/math_tools.h"
 #include "math.h"
 
+#define PI 3.1415926535897932384626433832795028841971
+
 double cf_phi(double x, double y){
     return pow(pow((x - 0.25),2)+ pow(y,2), 0.5) - 0.2;
 }
@@ -32,7 +34,7 @@ int main() {
 
     newGrid.print_VTK_format("../results/f22_hw02_problem1_0.vtk");
 
-    std::vector<double> vel_u, vel_v, phi;
+    std::vector<double> vel_u, vel_v, phi, phi_0;
     vel_u.resize(N*M);
     vel_v.resize(N*M);
     phi.resize(N*M);
@@ -49,24 +51,36 @@ int main() {
         }
     }
 
+    phi_0 = phi;
+
     newGrid.print_VTK_format(vel_u, "vel_u", "../results/f22_hw02_problem1_0.vtk");
     newGrid.print_VTK_format(vel_v, "vel_v", "../results/f22_hw02_problem1_0.vtk");
     newGrid.print_VTK_format(phi, "phi", "../results/f22_hw02_problem1_0.vtk");
 
-    double cfl = 0.5;
-    double dt = dx/cfl;
+    double ratio = 10.;
+    double dt = dx/ratio;
 
     SL_method sl_solver;
     sl_solver.set_grid(newGrid);
     sl_solver.set_velocity(vel_u, vel_v);
 
-    int steps = 314;
+    double t_final = 2.*PI;
+    int steps = floor(t_final / dt);
     int pr, mprint;
 
     mprint = 10;
     pr = 0;
 
-    for (int i = 0; i < steps; i++){
+    for (int i = 0; i < steps + 2; i++){
+
+        if (i*dt > t_final){
+            double temp_t = (i-1)*dt;
+            dt = t_final - (i-1)*dt;
+            std::cout << "Time: " << temp_t + dt << std::endl;
+        } else {
+            std::cout << "Time: " << i*dt << std::endl;
+        }
+
         sl_solver.update_sol(phi, dt);
 
         if (i % mprint == 0){
@@ -79,7 +93,7 @@ int main() {
 
             fileName.append(fileType);
 
-            std::cout << fileName << std::endl;
+            //std::cout << fileName << std::endl;
 
             newGrid.print_VTK_format(fileName);
             newGrid.print_VTK_format(vel_u, "vel_u", fileName);
@@ -88,8 +102,18 @@ int main() {
         }
     }
 
-    // Problem 2 - Reinitialization Equation
 
+    // Problem 2 - Reinitialization Equation
+    double l1, l2, linf;
+
+    l1   = norm_l1(phi, phi_0);
+    l2   = norm_l2(phi, phi_0);
+    linf = norm_linf(phi, phi_0);
+
+    std::cout << "\nFor ratio: " << ratio << "\n" << std::endl;
+    std::cout << "L1 Norm: " << l1 << std::endl;
+    std::cout << "L2 Norm: " << l2 << std::endl;
+    std::cout << "Linf Norm: " << linf << std::endl;
 
     // Problem 3 - Level Set Method
 

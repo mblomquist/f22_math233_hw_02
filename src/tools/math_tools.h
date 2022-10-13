@@ -16,4 +16,8 @@ double quadratic_interpolation(Grid2d & grid,std::vector<double> & func,double x
 
 double minmod(double x, double y);
 
+double norm_l1(std::vector<double> & x, std::vector<double> & y);
+double norm_l2(std::vector<double> & x, std::vector<double> & y);
+double norm_linf(std::vector<double> & x, std::vector<double> & y);
+
 #endif //F22_MATH233_HW_02_MATH_TOOLS_H

@@ -3,7 +3,7 @@
 //
 
 #include "math_tools.h"
-#include <cmath>
+#include "math.h"
 
 // suppose we have grid in 2D [xmin,xmax] x [ymin,ymax]
 // find cell in which (x,y) belongs
@@ -95,4 +95,41 @@ double quadratic_interpolation(Grid2d & grid,std::vector<double> & func,double x
         - (y-y_j)*(y_jp1-y)/2 * minmod(phi_yy_t, phi_yy_b);
 
     return phi;
+}
+
+double norm_l1(std::vector<double> & x, std::vector<double> & y){
+    double sum = 0.;
+
+    for (int i = 0; i < x.size(); i++){
+        sum += abs(x[i] - y[i]);
+    }
+
+    return sum;
+}
+
+double norm_l2(std::vector<double> & x, std::vector<double> & y){
+    double sum = 0.;
+
+    for (int i = 0; i < x.size(); i++){
+        sum += pow(x[i] - y[i], 2.);
+    }
+
+    sum = pow(sum, 0.5);
+
+    return sum;
+}
+
+double norm_linf(std::vector<double> & x, std::vector<double> & y){
+    double max = 0.;
+
+    for (int i = 0; i < x.size(); i++){
+        double temp = 0.;
+        temp = abs(x[i] - y[i]);
+
+        if(temp > max)
+            max = temp;
+    }
+
+    return max;
+
 }
