@@ -18,13 +18,17 @@ private:
 
 public:
     LevelSet();
-    LevelSet(Grid2d & newGrid, std::vector<double> & phi);
+    LevelSet(Grid2d & newGrid, std::vector<double> & phi_0);
 
     void setGrid(Grid2d & newGrid);
     void setPhi(std::vector<double> & phi_0);
 
     void getGrid(Grid2d & grid_o);
     void getPhi(std::vector<double> & phi_o);
+
+    void advance_sl(std::vector<double> & vel_u, std::vector<double> & vel_v, double dt);
+
+    void reinitialize(std::vector<double> & phi_0, std::vector<double> phi_n, std::vector<double> & phi_np1);
 
 };
 

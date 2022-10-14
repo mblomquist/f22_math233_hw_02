@@ -2,6 +2,7 @@
 #include "grid/Grid2d.h"
 #include "advection/SL_method.h"
 #include "tools/math_tools.h"
+#include "levelset/LevelSet.h"
 #include "math.h"
 
 #define PI 3.1415926535897932384626433832795028841971
@@ -57,7 +58,7 @@ int main() {
     newGrid.print_VTK_format(vel_v, "vel_v", "../results/f22_hw02_problem1_0.vtk");
     newGrid.print_VTK_format(phi, "phi", "../results/f22_hw02_problem1_0.vtk");
 
-    double ratio = 10.;
+    double ratio = 0.1;
     double dt = dx/ratio;
 
     SL_method sl_solver;
@@ -116,6 +117,37 @@ int main() {
     std::cout << "Linf Norm: " << linf << std::endl;
 
     // Problem 3 - Level Set Method
+    LevelSet ls_phi(newGrid, phi_0);
+    std::vector<double> p2_phi;
+    p2_phi.resize(phi_0.size());
+    ls_phi.getPhi(p2_phi);
+
+    std::string fileName = "../results/f22_hw02_problem2_";
+    std::string fileType = ".vtk";
+
+    fileName = fileName + std::to_string(0);
+    fileName.append(fileType);
+
+    newGrid.print_VTK_format(fileName);
+    newGrid.print_VTK_format(vel_u, "vel_u", fileName);
+    newGrid.print_VTK_format(vel_v, "vel_v", fileName);
+    newGrid.print_VTK_format(p2_phi, "phi", fileName);
+
+    for (int i = 0; i < 100; i++){
+        ls_phi.advance_sl(vel_u, vel_v, .1);
+    }
+
+    fileName = "../results/f22_hw02_problem2_";
+
+    fileName = fileName + std::to_string(1);
+    fileName.append(fileType);
+
+    ls_phi.getPhi(p2_phi);
+
+    newGrid.print_VTK_format(fileName);
+    newGrid.print_VTK_format(vel_u, "vel_u", fileName);
+    newGrid.print_VTK_format(vel_v, "vel_v", fileName);
+    newGrid.print_VTK_format(p2_phi, "phi", fileName);
 
 
     // Problem 4 - Extra Credit
