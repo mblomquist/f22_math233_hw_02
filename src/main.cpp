@@ -91,7 +91,7 @@ int main() {
     }
 
     // print initial phi
-    print_results_vtk(newGrid, "../results/f22_hw02_problem3_", (1./ratio), 0,
+    print_results_vtk(newGrid, "../results/f22_hw02_problem1_", (1./ratio), 0,
                       phi_0, vel_u, vel_v);
 
     // create ls
@@ -117,7 +117,7 @@ int main() {
         if (i % mprint == 0){
             iprint++;
             ls_phi.getPhi(phi);
-            print_results_vtk(newGrid, "../results/f22_hw02_problem3_", (1./ratio), iprint,
+            print_results_vtk(newGrid, "../results/f22_hw02_problem1_", (1./ratio), iprint,
                               phi, vel_u, vel_v);
         }
     }
@@ -130,6 +130,45 @@ int main() {
     measure_error(phi, phi_0);
 
     // Problem 2 - Reinitialization Equation
+    std::vector<double> phi2;
+    phi2.resize(N*M);
+
+    ls_phi.setPhi(phi_0);
+    ls_phi.getPhi(phi2);
+
+    print_results_vtk(newGrid, "../results/f22_hw02_problem2_", (1./ratio), 0,
+                      phi2, vel_u, vel_v);
+
+    dt = dx/ratio;
+
+    for (int i = 0; i < steps + 2; i++){
+
+        if (i*dt > t_final){
+            double temp_t = (i-1)*dt;
+            dt = t_final - (i-1)*dt;
+            std::cout << "Percent Complete: " << (temp_t + dt) / t_final * 100. << " %," << std::endl;
+        } else {
+            std::cout << "Percent Complete: " << i*dt/t_final * 100. << " %," << std::endl;
+        }
+
+        ls_phi.advance_sl(vel_u, vel_v, dt);
+        std::vector<double> phi_t;
+        phi_t.resize(N*M);
+        phi_t = phi2;
+        ls_phi.reinitialize(phi_t, phi2, phi2);
+        ls_phi.setPhi(phi2);
+
+        if (i % mprint == 0){
+            iprint++;
+            ls_phi.getPhi(phi2);
+            print_results_vtk(newGrid, "../results/f22_hw02_problem2_", (1./ratio), iprint,
+                              phi, vel_u, vel_v);
+        }
+    }
+
+    // measure the error
+    std::cout << "\nProblem 2 - Measured Error for CFL " << (1./ratio) << std::endl;
+    measure_error(phi2, phi_0);
 
     // Problem 3 - Level Set Method
 

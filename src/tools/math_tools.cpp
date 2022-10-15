@@ -133,3 +133,24 @@ double norm_linf(std::vector<double> & x, std::vector<double> & y){
     return max;
 
 }
+
+double sgn(double x){
+    if (x < 0.){
+        return -1.;
+    } else if (x > 0.){
+        return 1.;
+    } else
+        return 0.;
+}
+
+double max(double a, double b){
+    return (a > b) ? a : b;
+}
+
+double min(double a, double b){
+    return (a > b) ? a : b;
+}
+
+double sqroot(double a){
+    return pow(a, 0.5);
+}

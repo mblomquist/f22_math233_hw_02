@@ -20,4 +20,11 @@ double norm_l1(std::vector<double> & x, std::vector<double> & y);
 double norm_l2(std::vector<double> & x, std::vector<double> & y);
 double norm_linf(std::vector<double> & x, std::vector<double> & y);
 
+double sgn(double x);
+
+double max(double a, double b);
+double min(double a, double b);
+
+double sqroot(double a);
+
 #endif //F22_MATH233_HW_02_MATH_TOOLS_H
