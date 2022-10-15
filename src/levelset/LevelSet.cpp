@@ -40,8 +40,6 @@ void LevelSet::advance_sl(std::vector<double> & vel_u, std::vector<double> & vel
 
 void LevelSet::reinitialize(const std::vector<double> &phi_0, std::vector<double> &phi_n, std::vector<double> &phi_np1) {
 
-
-
     for(int i = 0; i < grid.get_N(); i++){
         for(int j = 0; j < grid.get_M(); j++){
 
@@ -63,7 +61,7 @@ void LevelSet::reinitialize(const std::vector<double> &phi_0, std::vector<double
             double dt = min(abs(dpx_p), abs(dpx_m));
             dt = min(dt, abs(dpy_p));
             dt = min(dt, abs(dpy_m));
-            dt = 0.5 * dt;
+            dt = 0.2 * dt;
 
             // Godunov scheme
             if (Sp_0 > 0.) {
@@ -77,8 +75,6 @@ void LevelSet::reinitialize(const std::vector<double> &phi_0, std::vector<double
                 if (dpy_p < 0.) dpy_p = 0.;
                 if (dpy_m > 0.) dpy_m = 0.;
             }
-
-            //std::cout << "(i,j):" << i << ", " << j << std::endl;
 
             p_n = p_n - dt * Sp_0 * (sqroot(max(dpx_p*dpx_p,dpx_m*dpx_m) + max(dpy_p*dpy_p,dpy_m*dpy_m)) - 1.);
 

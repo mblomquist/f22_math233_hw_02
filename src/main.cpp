@@ -152,9 +152,11 @@ int main() {
         }
 
         ls_phi.advance_sl(vel_u, vel_v, dt);
+
         std::vector<double> phi_t;
         phi_t.resize(N*M);
         phi_t = phi2;
+
         ls_phi.reinitialize(phi_t, phi2, phi2);
         ls_phi.setPhi(phi2);
 
@@ -162,7 +164,7 @@ int main() {
             iprint++;
             ls_phi.getPhi(phi2);
             print_results_vtk(newGrid, "../results/f22_hw02_problem2_", (1./ratio), iprint,
-                              phi, vel_u, vel_v);
+                              phi2, vel_u, vel_v);
         }
     }
 
