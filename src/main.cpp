@@ -47,33 +47,28 @@ void print_results_vtk(Grid2d newGrid, std::string fileName, double cfl, int itr
 int main() {
     std::cout << "Problem 1!\n" << std::endl;
 
+    // -------------------------------------- //
     // Problem 1 - Semi-Lagrangian Method for the advection equation
-
-    // set grid size
+    // -------------------------------------- //
     double xmin = -1.0;
     double xmax = 1.0;
     double ymin = -1.0;
     double ymax = 1.0;
 
-    // set grid points (keep square for now)
     int N = 100;
     int M = N;
 
-    // set cfl (1/ratio), final time
     double ratio = 0.1;
     double t_final = 2.*PI;
 
-    // create vectors for velocity, phi's
     std::vector<double> vel_u, vel_v, phi, phi_0;
     vel_u.resize(N*M);
     vel_v.resize(N*M);
     phi.resize(N*M);
     phi_0.resize(N*M);
 
-    // initialize grid
     Grid2d newGrid(N, M, xmin, xmax, ymin, ymax);
 
-    // compute dt for req ratio (1/CFL)
     double dx = newGrid.get_dx();
     double dt = dx/ratio;
 
@@ -90,14 +85,12 @@ int main() {
         }
     }
 
-    // print initial phi
     print_results_vtk(newGrid, "../results/f22_hw02_problem1_", (1./ratio), 0,
                       phi_0, vel_u, vel_v);
 
-    // create ls
     LevelSet ls_phi(newGrid, phi_0);
 
-    // compute steps
+    // compute steps to t_final
     int steps = floor(t_final / dt);
     int iprint = 0;
     int mprint = 1;
@@ -129,15 +122,26 @@ int main() {
     std::cout << "\nProblem 1 - Measured Error for CFL " << (1./ratio) << std::endl;
     measure_error(phi, phi_0);
 
+    // -------------------------------------- //
     // Problem 2 - Reinitialization Equation
-    std::vector<double> phi2;
+    // -------------------------------------- //
+
+    // -------------------------------------- //
+    // Problem 3 - Level Set Method
+    // -------------------------------------- //
+
+// Switch for Problem 3
+#if 1
+
+    std::vector<double> phi2, phi_t;
     phi2.resize(N*M);
+    phi_t.resize(N*M);
 
     ls_phi.setPhi(phi_0);
-    ls_phi.getPhi(phi2);
+    ls_phi.getPhi(phi);
 
     print_results_vtk(newGrid, "../results/f22_hw02_problem2_", (1./ratio), 0,
-                      phi2, vel_u, vel_v);
+                      phi, vel_u, vel_v);
 
     dt = dx/ratio;
 
@@ -152,12 +156,11 @@ int main() {
         }
 
         ls_phi.advance_sl(vel_u, vel_v, dt);
+        ls_phi.getPhi(phi);
 
-        std::vector<double> phi_t;
-        phi_t.resize(N*M);
-        phi_t = phi2;
+        phi_t = phi;
 
-        ls_phi.reinitialize(phi_t, phi2, phi2);
+        ls_phi.reinitialize(phi_t, phi, phi2);
         ls_phi.setPhi(phi2);
 
         if (i % mprint == 0){
@@ -170,11 +173,12 @@ int main() {
 
     // measure the error
     std::cout << "\nProblem 2 - Measured Error for CFL " << (1./ratio) << std::endl;
-    measure_error(phi2, phi_0);
+    measure_error(phi, phi_0);
+#endif
 
-    // Problem 3 - Level Set Method
-
+    // -------------------------------------- //
     // Problem 4 - Extra Credit
+    // -------------------------------------- //
 
 
     return 0;
