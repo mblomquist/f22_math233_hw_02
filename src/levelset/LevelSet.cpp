@@ -58,6 +58,19 @@ void LevelSet::reinitialize(const std::vector<double> &phi_0, std::vector<double
             dpy_m = (phi_n[grid.n_from_ij(i,j)] - phi_n[grid.n_from_ij(i,j-1)]) / dy;
             dpy_p = (phi_n[grid.n_from_ij(i,j+1)] - phi_n[grid.n_from_ij(i,j)]) / dy;
 
+            if (i == 0){
+                dpx_m = 0.;
+            }
+            if (i == grid.get_N()){
+                dpx_p = 0.;
+            }
+            if (j == 0){
+                dpy_m = 0.;
+            }
+            if (j == grid.get_M()){
+                dpy_p = 0.;
+            }
+
             double dt = min(abs(dpx_p), abs(dpx_m));
             dt = min(dt, abs(dpy_p));
             dt = min(dt, abs(dpy_m));
