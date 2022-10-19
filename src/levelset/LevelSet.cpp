@@ -52,29 +52,26 @@ void LevelSet::reinitialize(const std::vector<double> &phi_0, std::vector<double
 
             double Sp_0 = sgn(p_0);
 
-            // compute one sided derivatives
             dpx_m = (phi_n[grid.n_from_ij(i,j)] - phi_n[grid.n_from_ij(i-1,j)]) / dx;
             dpx_p = (phi_n[grid.n_from_ij(i+1,j)] - phi_n[grid.n_from_ij(i,j)]) / dx;
             dpy_m = (phi_n[grid.n_from_ij(i,j)] - phi_n[grid.n_from_ij(i,j-1)]) / dy;
             dpy_p = (phi_n[grid.n_from_ij(i,j+1)] - phi_n[grid.n_from_ij(i,j)]) / dy;
 
             if (i == 0){
-                dpx_m = 0.;
+                dpx_m = dpx_p;
             }
             if (i == grid.get_N()){
-                dpx_p = 0.;
+                dpx_p = dpx_m;
             }
             if (j == 0){
-                dpy_m = 0.;
+                dpy_m = dpy_p;
             }
             if (j == grid.get_M()){
-                dpy_p = 0.;
+                dpy_p = dpy_m;
             }
 
-            double dt = min(abs(dpx_p), abs(dpx_m));
-            dt = min(dt, abs(dpy_p));
-            dt = min(dt, abs(dpy_m));
-            dt = 0.2 * dt;
+
+            double dt = 0.0002 * dx;
 
             // Godunov scheme
             if (Sp_0 > 0.) {
@@ -91,10 +88,8 @@ void LevelSet::reinitialize(const std::vector<double> &phi_0, std::vector<double
 
             p_n = p_n - dt * Sp_0 * (sqroot(max(dpx_p*dpx_p,dpx_m*dpx_m) + max(dpy_p*dpy_p,dpy_m*dpy_m)) - 1.);
 
-            if (p_n * p_0 < 0.)
-                phi_np1[grid.n_from_ij(i,j)] = -p_n;
-            else
-                phi_np1[grid.n_from_ij(i,j)] = p_n;
+            phi_np1[grid.n_from_ij(i,j)] = p_n;
+
         }
     }
 }

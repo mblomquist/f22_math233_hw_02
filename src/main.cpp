@@ -140,7 +140,7 @@ int main() {
     ls_phi.setPhi(phi_0);
     ls_phi.getPhi(phi);
 
-    print_results_vtk(newGrid, "../results/f22_hw02_problem2_", (1./ratio), 0,
+    print_results_vtk(newGrid, "../results/f22_hw02_problem3_", (1./ratio), 0,
                       phi, vel_u, vel_v);
 
     dt = dx/ratio;
@@ -166,7 +166,7 @@ int main() {
         if (i % mprint == 0){
             iprint++;
             ls_phi.getPhi(phi2);
-            print_results_vtk(newGrid, "../results/f22_hw02_problem2_", (1./ratio), iprint,
+            print_results_vtk(newGrid, "../results/f22_hw02_problem3_", (1./ratio), iprint,
                               phi2, vel_u, vel_v);
         }
     }
