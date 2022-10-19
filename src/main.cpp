@@ -45,7 +45,7 @@ void print_results_vtk(Grid2d newGrid, std::string fileName, double cfl, int itr
 }
 
 int main() {
-    std::cout << "Problem 1!\n" << std::endl;
+    std::cout << "\n\nProblem 1!\n\n" << std::endl;
 
     // -------------------------------------- //
     // Problem 1 - Semi-Lagrangian Method for the advection equation
@@ -58,7 +58,7 @@ int main() {
     int N = 100;
     int M = N;
 
-    double ratio = 0.1;
+    double ratio = 1.0;
     double t_final = 2.*PI;
 
     std::vector<double> vel_u, vel_v, phi, phi_0;
@@ -93,7 +93,7 @@ int main() {
     // compute steps to t_final
     int steps = floor(t_final / dt);
     int iprint = 0;
-    int mprint = 1;
+    int mprint = floor(steps * ratio) + 1;
 
     for (int i = 0; i < steps + 2; i++){
 
@@ -125,6 +125,7 @@ int main() {
     // -------------------------------------- //
     // Problem 2 - Reinitialization Equation
     // -------------------------------------- //
+    std::cout << "\n\nProblem 2!\n\n" << std::endl;
 
     // -------------------------------------- //
     // Problem 3 - Level Set Method
@@ -132,6 +133,7 @@ int main() {
 
 // Switch for Problem 3
 #if 1
+    std::cout << "\n\nProblem 3!\n\n" << std::endl;
 
     std::vector<double> phi2, phi_t;
     phi2.resize(N*M);
@@ -160,7 +162,11 @@ int main() {
 
         phi_t = phi;
 
-        ls_phi.reinitialize(phi_t, phi, phi2);
+        for (int i = 0; i < 10; i++){
+            ls_phi.reinitialize(phi_t, phi, phi2);
+            phi = phi2;
+        }
+
         ls_phi.setPhi(phi2);
 
         if (i % mprint == 0){
@@ -172,13 +178,14 @@ int main() {
     }
 
     // measure the error
-    std::cout << "\nProblem 2 - Measured Error for CFL " << (1./ratio) << std::endl;
+    std::cout << "\nProblem 3 - Measured Error for CFL " << (1./ratio) << std::endl;
     measure_error(phi, phi_0);
 #endif
 
     // -------------------------------------- //
     // Problem 4 - Extra Credit
     // -------------------------------------- //
+    std::cout << "\n\nProblem 4!\n\n" << std::endl;
 
 
     return 0;
