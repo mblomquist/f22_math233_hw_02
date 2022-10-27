@@ -4,7 +4,7 @@
 #include "levelset/LevelSet.h"
 #include "math.h"
 
-#define PI 3.1415926535897932384626433832795028841971
+#define PI 3.1415926535897932384626
 
 double cf_phi(double x, double y){
     return pow(pow((x - 0.25),2)+ pow(y,2), 0.5) - 0.2;
@@ -165,15 +165,14 @@ int main() {
 
         phi_t = phi;
 
-        double err_p3 = 10.;
-        int maxitrs = 100;
+        double err_p3 = 1.;
+        int maxitrs = 10;
         int itrs = 0;
 
         while (err_p3 > 1.e-8 && itrs < maxitrs){
             ls_phi.reinitialize(phi_t, phi, phi2);
             err_p3 = norm_linf_ls(phi, phi2, 0.02);
             phi = phi2;
-//            std::cout << "Error: " << err_p3 << " itr: " << itrs << std::endl;
             itrs++;
         }
 
