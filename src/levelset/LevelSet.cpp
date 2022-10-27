@@ -51,56 +51,62 @@ LevelSet::reinitialize(const std::vector<double> &phi_0, std::vector<double> &ph
             double p_0 = phi_0[grid.n_from_ij(i, j)];
             double p_n = phi_n[grid.n_from_ij(i, j)];
 
+            double p_l = phi_n[grid.n_from_ij(i - 1, j)];
+            double p_r = phi_n[grid.n_from_ij(i + 1, j)];
+            double p_b = phi_n[grid.n_from_ij(i, j - 1)];
+            double p_t = phi_n[grid.n_from_ij(i, j + 1)];
+
             double Sp_0 = sgn(p_0);
 
-            if (abs(p_0) < 1.e-10) {
-                phi_n[grid.n_from_ij(i, j)] = 0.;
-            } else {
+            if (p_n * p_l < 0.) dpx_m = p_n / abs(p_0);
+            else dpx_m = (p_n - p_l) / dx;
 
+            if (p_r * p_n < 0.) dpx_p = p_n / abs(p_0);
+            else dpx_p = (p_r - p_n) / dx;
 
-                dpx_m = (phi_n[grid.n_from_ij(i, j)] - phi_n[grid.n_from_ij(i - 1, j)]) / dx;
-                dpx_p = (phi_n[grid.n_from_ij(i + 1, j)] - phi_n[grid.n_from_ij(i, j)]) / dx;
-                dpy_m = (phi_n[grid.n_from_ij(i, j)] - phi_n[grid.n_from_ij(i, j - 1)]) / dy;
-                dpy_p = (phi_n[grid.n_from_ij(i, j + 1)] - phi_n[grid.n_from_ij(i, j)]) / dy;
+            if (p_n * p_b < 0.) dpy_m = p_n / abs(p_0);
+            else dpy_m = (p_n - p_b) / dy;
 
-                if (i == 0) {
-                    dpx_m = dpx_p;
-                }
-                if (i == grid.get_N()) {
-                    dpx_p = dpx_m;
-                }
-                if (j == 0) {
-                    dpy_m = dpy_p;
-                }
-                if (j == grid.get_M()) {
-                    dpy_p = dpy_m;
-                }
+            if (p_t * p_n < 0.) dpy_p = p_n / abs(p_0);
+            else dpy_p = (p_t - p_n) / dy;
 
-
-                double dt = 0.01 * dx;
-
-                // Godunov scheme
-                if (Sp_0 > 0.) {
-                    if (dpx_p > 0.) dpx_p = 0.;
-                    if (dpx_m < 0.) dpx_m = 0.;
-                    if (dpy_p > 0.) dpy_p = 0.;
-                    if (dpy_m < 0.) dpy_m = 0.;
-                } else {
-                    if (dpx_p < 0.) dpx_p = 0.;
-                    if (dpx_m > 0.) dpx_m = 0.;
-                    if (dpy_p < 0.) dpy_p = 0.;
-                    if (dpy_m > 0.) dpy_m = 0.;
-                }
-
-                p_n = p_n -
-                      dt * Sp_0 * (sqroot(max(dpx_p * dpx_p, dpx_m * dpx_m) + max(dpy_p * dpy_p, dpy_m * dpy_m)) - 1.);
-
-//                if (p_n * p_0 < 0.)
-//                    phi_np1[grid.n_from_ij(i, j)] = p_n;
-//                else
-//                    phi_np1[grid.n_from_ij(i, j)] = -p_n;
-                phi_np1[grid.n_from_ij(i, j)] = p_n;
+            if (i == 0) {
+                dpx_m = dpx_p;
             }
+            if (i == grid.get_N()) {
+                dpx_p = dpx_m;
+            }
+            if (j == 0) {
+                dpy_m = dpy_p;
+            }
+            if (j == grid.get_M()) {
+                dpy_p = dpy_m;
+            }
+
+
+            double dt = 0.01 * dx;
+
+            // Godunov scheme
+            if (Sp_0 > 0.) {
+                if (dpx_p > 0.) dpx_p = 0.;
+                if (dpx_m < 0.) dpx_m = 0.;
+                if (dpy_p > 0.) dpy_p = 0.;
+                if (dpy_m < 0.) dpy_m = 0.;
+            } else {
+                if (dpx_p < 0.) dpx_p = 0.;
+                if (dpx_m > 0.) dpx_m = 0.;
+                if (dpy_p < 0.) dpy_p = 0.;
+                if (dpy_m > 0.) dpy_m = 0.;
+            }
+
+            p_n = p_n -
+                  dt * Sp_0 * (sqroot(max(dpx_p * dpx_p, dpx_m * dpx_m) + max(dpy_p * dpy_p, dpy_m * dpy_m)) - 1.);
+
+            if (p_n * p_0 < 0.)
+                phi_np1[grid.n_from_ij(i, j)] = -p_n;
+            else
+                phi_np1[grid.n_from_ij(i, j)] = p_n;
+
         }
     }
 }

@@ -173,7 +173,7 @@ int main() {
             ls_phi.reinitialize(phi_t, phi, phi2);
             err_p3 = norm_linf_ls(phi, phi2, 0.02);
             phi = phi2;
-            std::cout << "Error: " << err_p3 << " itr: " << itrs << std::endl;
+//            std::cout << "Error: " << err_p3 << " itr: " << itrs << std::endl;
             itrs++;
         }
 
