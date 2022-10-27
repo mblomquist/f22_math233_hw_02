@@ -154,3 +154,45 @@ double min(double a, double b){
 double sqroot(double a){
     return pow(a, 0.5);
 }
+
+double norm_l1_ls(std::vector<double> & x, std::vector<double> & y, double eps){
+    double sum = 0.;
+
+    for (int i = 0; i < x.size(); i++){
+        if (abs(y[i]) < eps)
+            sum += abs(x[i] - y[i]);
+    }
+
+    return sum;
+}
+
+double norm_l2_ls(std::vector<double> & x, std::vector<double> & y, double eps){
+    double sum = 0.;
+
+    for (int i = 0; i < x.size(); i++){
+        if (abs(y[i]) < eps)
+            sum += pow(x[i] - y[i], 2.);
+    }
+
+    sum = pow(sum, 0.5);
+
+    return sum;
+}
+
+double norm_linf_ls(std::vector<double> & x, std::vector<double> & y, double eps){
+    double max = 0.;
+
+    for (int i = 0; i < x.size(); i++){
+        double temp = 0.;
+
+        if (abs(y[i]) < eps){
+            temp = abs(x[i] - y[i]);
+
+            if(temp > max)
+                max = temp;
+        }
+    }
+
+    return max;
+
+}

@@ -19,9 +19,9 @@ void measure_error(std::vector<double> phi, std::vector<double> phi_0){
 
     double l1, l2, linf;
 
-    l1   = norm_l1(phi, phi_0);
-    l2   = norm_l2(phi, phi_0);
-    linf = norm_linf(phi, phi_0);
+    l1   = norm_l1_ls(phi, phi_0, 0.02);
+    l2   = norm_l2_ls(phi, phi_0, 0.02);
+    linf = norm_linf_ls(phi, phi_0, 0.02);
 
     std::cout << "L1 Norm: " << l1 << std::endl;
     std::cout << "L2 Norm: " << l2 << std::endl;
@@ -55,10 +55,10 @@ int main() {
     double ymin = -1.0;
     double ymax = 1.0;
 
-    int N = 100;
+    int N = 64;
     int M = N;
 
-    double ratio = 1.0;
+    double ratio = 0.1;
     double t_final = 2.*PI;
 
     std::vector<double> vel_u, vel_v, phi, phi_0;
@@ -93,9 +93,9 @@ int main() {
     // compute steps to t_final
     int steps = floor(t_final / dt);
     int iprint = 0;
-    int mprint = floor(steps * ratio) + 1;
+    int mprint = 1; //floor(steps * ratio) + 1;
 
-    for (int i = 0; i < steps + 2; i++){
+    for (int i = 1; i <= steps+1; i++){
 
         if (i*dt > t_final){
             double temp_t = (i-1)*dt;
@@ -120,12 +120,14 @@ int main() {
 
     // measure the error
     std::cout << "\nProblem 1 - Measured Error for CFL " << (1./ratio) << std::endl;
+    std::cout << "dt: " << dx/ratio << std::endl;
+    std::cout << "dx: " << dx << std::endl;
     measure_error(phi, phi_0);
 
     // -------------------------------------- //
     // Problem 2 - Reinitialization Equation
     // -------------------------------------- //
-    std::cout << "\n\nProblem 2!\n\n" << std::endl;
+//    std::cout << "\n\nProblem 2!\n\n" << std::endl;
 
     // -------------------------------------- //
     // Problem 3 - Level Set Method
@@ -146,8 +148,9 @@ int main() {
                       phi, vel_u, vel_v);
 
     dt = dx/ratio;
+    iprint = 0;
 
-    for (int i = 0; i < steps + 2; i++){
+    for (int i = 1; i <= steps+1; i++){
 
         if (i*dt > t_final){
             double temp_t = (i-1)*dt;
@@ -162,9 +165,16 @@ int main() {
 
         phi_t = phi;
 
-        for (int i = 0; i < 10; i++){
+        double err_p3 = 10.;
+        int maxitrs = 100;
+        int itrs = 0;
+
+        while (err_p3 > 1.e-8 && itrs < maxitrs){
             ls_phi.reinitialize(phi_t, phi, phi2);
+            err_p3 = norm_linf_ls(phi, phi2, 0.02);
             phi = phi2;
+            std::cout << "Error: " << err_p3 << " itr: " << itrs << std::endl;
+            itrs++;
         }
 
         ls_phi.setPhi(phi2);
@@ -185,7 +195,7 @@ int main() {
     // -------------------------------------- //
     // Problem 4 - Extra Credit
     // -------------------------------------- //
-    std::cout << "\n\nProblem 4!\n\n" << std::endl;
+//    std::cout << "\n\nProblem 4!\n\n" << std::endl;
 
 
     return 0;
