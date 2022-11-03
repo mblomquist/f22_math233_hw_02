@@ -8,6 +8,7 @@
 
 double cf_phi(double x, double y){
     return pow(pow((x - 0.25),2)+ pow(y,2), 0.5) - 0.2;
+//    return pow(pow((x),2)+ pow(y,2), 0.5) - 0.5; // this is for problem 2
 }
 
 void cf_vel0(double x, double y, double & vel_u, double & vel_v){
@@ -127,7 +128,34 @@ int main() {
     // -------------------------------------- //
     // Problem 2 - Reinitialization Equation
     // -------------------------------------- //
-//    std::cout << "\n\nProblem 2!\n\n" << std::endl;
+    std::cout << "\n\nProblem 2!\n\n" << std::endl;
+
+    std::vector<double> phi_p, phi_pi, phi_pf;
+    phi_p.resize(N*M);
+    phi_pi.resize(N*M);
+    phi_pf.resize(N*M);
+    phi_p = phi_0;
+
+    print_results_vtk(newGrid, "../results/f22_hw02_problem2_", (1./ratio), 0,
+                      phi_p, vel_u, vel_v);
+
+    ls_phi.perturb_ls(phi_p, 1.e-1);
+    ls_phi.setPhi(phi_p);
+    phi_pi = phi_p;
+
+    print_results_vtk(newGrid, "../results/f22_hw02_problem2_", (1./ratio), 1,
+                      phi_p, vel_u, vel_v);
+
+    int mitr = 100;
+
+    for (int i = 2; i < mitr; i++){
+        ls_phi.reinitialize(phi_p, phi_pi, phi_pf);
+        print_results_vtk(newGrid, "../results/f22_hw02_problem2_", (1./ratio), i,
+                          phi_pf, vel_u, vel_v);
+        phi_pi = phi_pf;
+    }
+
+
 
     // -------------------------------------- //
     // Problem 3 - Level Set Method

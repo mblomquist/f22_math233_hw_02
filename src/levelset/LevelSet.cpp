@@ -3,6 +3,7 @@
 //
 
 #include "LevelSet.h"
+#include <stdlib.h>
 
 LevelSet::LevelSet(Grid2d &newGrid, std::vector<double> &phi_0) {
 
@@ -87,7 +88,7 @@ LevelSet::reinitialize(const std::vector<double> &phi_0, std::vector<double> &ph
                     dpy_p = dpy_m;
                 }
 
-                double dt = 0.01 * dx;
+                double dt = 0.5 * dx;
 
                 // Godunov scheme
                 if (p_0 > 0.) {
@@ -110,6 +111,23 @@ LevelSet::reinitialize(const std::vector<double> &phi_0, std::vector<double> &ph
                 else
                     phi_np1[grid.n_from_ij(i, j)] = p_n;
 
+            }
+        }
+    }
+}
+
+void LevelSet::perturb_ls(std::vector<double> &phi_p, double eps) {
+
+    for (int i = 0; i < grid.get_N(); i++){
+        for (int j = 0; j < grid.get_M(); j++){
+
+            double& p = phi_p[grid.n_from_ij(i,j)];
+
+            if (abs(p) > eps){
+                if (p > 0.)
+                    p += 0.01 * (rand() % 10);
+                if (p < 0.)
+                    p -= 0.01 * (rand() % 10);
             }
         }
     }

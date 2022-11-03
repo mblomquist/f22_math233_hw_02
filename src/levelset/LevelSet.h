@@ -29,6 +29,7 @@ public:
     void advance_sl(std::vector<double> & vel_u, std::vector<double> & vel_v, double dt);
 
     void reinitialize(const std::vector<double> & phi_0, std::vector<double> & phi_n, std::vector<double> & phi_np1);
+    void perturb_ls(std::vector<double> &phi_p, double eps);
 
 };
 
